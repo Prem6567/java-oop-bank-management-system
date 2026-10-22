@@ -1,0 +1,173 @@
+import java.util.Scanner;
+
+class BankAccount {
+    private final String accountHolder;
+    private final String accountNumber;
+    private double balance;
+
+    public BankAccount(String accountHolder, String accountNumber,
+                       double initialBalance) {
+        this.accountHolder = accountHolder;
+        this.accountNumber = accountNumber;
+        this.balance = initialBalance;
+    }
+
+    public String getAccountHolder() {
+        return accountHolder;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount <= 0 || !Double.isFinite(amount)) {
+            System.out.println("Error: Enter a valid deposit amount.");
+            return;
+        }
+
+        balance += amount;
+        System.out.printf("Deposit successful! Amount: Rs. %.2f%n", amount);
+        System.out.printf("Updated Balance: Rs. %.2f%n", balance);
+    }
+
+    public void withdraw(double amount) {
+        if (amount <= 0 || !Double.isFinite(amount)) {
+            System.out.println("Error: Enter a valid withdrawal amount.");
+        } else if (amount > balance) {
+            System.out.println("Error: Insufficient account balance.");
+        } else {
+            balance -= amount;
+            System.out.printf("Withdrawal successful! Amount: Rs. %.2f%n",
+                              amount);
+            System.out.printf("Remaining Balance: Rs. %.2f%n", balance);
+        }
+    }
+
+    public void displayAccountDetails() {
+        System.out.println("\n========== ACCOUNT DETAILS ==========");
+        System.out.println("Account Holder : " + accountHolder);
+        System.out.println("Account Number : " + accountNumber);
+        System.out.printf("Available Balance: Rs. %.2f%n", balance);
+        System.out.println("=====================================");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("=====================================");
+        System.out.println("       BANK MANAGEMENT SYSTEM");
+        System.out.println("=====================================");
+
+        System.out.print("Enter Account Holder Name: ");
+        String name = sc.nextLine().trim();
+
+        System.out.print("Enter Account Number: ");
+        String accountNumber = sc.nextLine().trim();
+
+        if (name.isEmpty() || accountNumber.isEmpty()) {
+            System.out.println("Error: Name and account number are required.");
+            sc.close();
+            return;
+        }
+
+        double initialBalance;
+
+        while (true) {
+            System.out.print("Enter Initial Balance (Rs.): ");
+
+            if (!sc.hasNextDouble()) {
+                System.out.println("Error: Please enter a valid number.");
+                sc.nextLine();
+                continue;
+            }
+
+            initialBalance = sc.nextDouble();
+            sc.nextLine();
+
+            if (!Double.isFinite(initialBalance) || initialBalance < 0) {
+                System.out.println("Error: Balance cannot be negative.");
+            } else {
+                break;
+            }
+        }
+
+        BankAccount account =
+                new BankAccount(name, accountNumber, initialBalance);
+
+        int choice = 0;
+
+        do {
+            System.out.println("\n========== BANK MENU ==========");
+            System.out.println("1. Display Account Details");
+            System.out.println("2. Deposit Money");
+            System.out.println("3. Withdraw Money");
+            System.out.println("4. Check Balance");
+            System.out.println("5. Exit");
+            System.out.println("===============================");
+            System.out.print("Enter Your Choice: ");
+
+            if (!sc.hasNextInt()) {
+                System.out.println("Error: Enter a number from 1 to 5.");
+                sc.nextLine();
+                continue;
+            }
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    account.displayAccountDetails();
+                    break;
+
+                case 2:
+                    System.out.print("Enter Deposit Amount (Rs.): ");
+
+                    if (sc.hasNextDouble()) {
+                        account.deposit(sc.nextDouble());
+                        sc.nextLine();
+                    } else {
+                        System.out.println("Error: Enter a valid amount.");
+                        sc.nextLine();
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Withdrawal Amount (Rs.): ");
+
+                    if (sc.hasNextDouble()) {
+                        account.withdraw(sc.nextDouble());
+                        sc.nextLine();
+                    } else {
+                        System.out.println("Error: Enter a valid amount.");
+                        sc.nextLine();
+                    }
+                    break;
+
+                case 4:
+                    System.out.printf("Current Balance: Rs. %.2f%n",
+                                      account.getBalance());
+                    break;
+
+                case 5:
+                    System.out.println(
+                            "Thank you for using Bank Management System!");
+                    break;
+
+                default:
+                    System.out.println(
+                            "Invalid choice. Please select 1 to 5.");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
